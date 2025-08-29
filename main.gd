@@ -1,0 +1,118 @@
+extends Node2D
+
+var availableRooms = {}
+var roomMap = {
+	Vector2i(-1,-1):"-empty-",
+	Vector2i(0,0):"Kitchen", 
+	Vector2i(1,1):"Bedroom", 
+	Vector2i(2,0):"DiningHall"#
+}
+var resourceMap = {"Comfort":0,"Abode":0,"Prestige":0}
+var current_room = null
+var comfort = 0
+
+
+#signal room_placed
+
+#func _on_room_placed():
+	
+
+
+func make_room_buttons():
+	var palette = $UI/RoomPalette
+	
+	for child in palette.get_children():
+		child.queue_free()
+
+	for room_name in availableRooms.keys():
+		if availableRooms[room_name]["unlocked"]:
+			var btn_scene = preload("res://RoomButton.tscn")
+			var btn = btn_scene.instantiate()
+			btn.text = room_name
+			btn.connect("pressed", Callable(self, "_on_room_button_pressed").bind(room_name))
+			palette.add_child(btn)
+
+func _on_room_button_pressed(room_name):
+	current_room = room_name
+	$UI/InfoLabel.text = "Selected: " + current_room
+
+
+func place_room(cell: Vector2i, room_name: String):
+	var tilemap = $TileMapLayer
+
+	# Look up which atlas coord to use for this room
+	var atlas = availableRooms[room_name]["atlas_coord"]
+	var atlas_coord = Vector2i(atlas[0], atlas[1])
+	
+
+	# Place that tile in the grid
+	tilemap.set_cell(cell, 4, atlas_coord)
+	print(room_name + " has been placed at " + str(cell))
+	# Arguments:
+	#   layer = 0
+	#   cell position = cell
+	#   source_id = 0 (your TileSet resource ID, usually 0 if one TileSet)
+	#   atlas_coord = coords of the sprite in the atlas
+
+func _ready():
+	var file = FileAccess.open("res://rooms.json", FileAccess.READ)
+	var text = file.get_as_text()
+	availableRooms = JSON.parse_string(text)
+	file.close()
+
+	print(availableRooms["Kitchen"]["adjacency"])
+	
+	make_room_buttons()
+	
+	print("Children in palette: ", $UI/RoomPalette.get_child_count())
+	
+	
+
+func is_mouse_over_ui(mouse_pos: Vector2) -> bool:
+	# Iterate over all direct children of your UI container
+	for control in $UI.get_children():
+		if control is Control:
+			var rect = control.get_global_rect()
+			if rect.has_point(mouse_pos):
+				return true
+	return false
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	
+	if Input.is_action_just_pressed("place_click"):
+		if current_room != null:
+			var tilemap = $TileMapLayer
+			var label = $UI/RoomLabel
+			var label_string = ""
+			var mouse_pos = tilemap.get_local_mouse_position()
+			var cell = tilemap.local_to_map(mouse_pos)
+			if is_mouse_over_ui(mouse_pos):
+				return # Skip tile placement if mouse is over UI
+			place_room(cell, current_room)
+			
+			if availableRooms[current_room]["effect"]:
+				var roomEffect = availableRooms[current_room]["effect"]
+				resourceMap[roomEffect] += availableRooms[current_room]["value"]
+			
+			
+			if availableRooms[current_room]["adjacency"]:
+				var roomAdjProps = availableRooms[current_room]["adjacency"]
+				var current_neighbour = null
+				print(roomAdjProps)
+				if roomAdjProps.has(roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x + 1, cell.y))]):
+					current_neighbour = roomAdjProps[roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x + 1, cell.y))]]
+					resourceMap[current_neighbour["effect"]] += 1
+				if roomAdjProps.has(roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x - 1, cell.y))]):
+					current_neighbour = roomAdjProps[roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x - 1, cell.y))]]
+					resourceMap[current_neighbour["effect"]] += 1
+				if roomAdjProps.has(roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x, cell.y + 1))]):
+					current_neighbour = roomAdjProps[roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x, cell.y + 1))]]
+					resourceMap[current_neighbour["effect"]] += 1
+				if roomAdjProps.has(roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x, cell.y - 1))]):
+					current_neighbour = roomAdjProps[roomMap[tilemap.get_cell_atlas_coords(Vector2i(cell.x, cell.y - 1))]]
+					resourceMap[current_neighbour["effect"]] += 1
+				
+			for i in resourceMap:
+				label_string += i + " +" + str(resourceMap[i]) + "\n" 
+			label.text = label_string

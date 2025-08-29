@@ -1,0 +1,108 @@
+[gd_scene load_steps=5 format=3 uid="uid://b2ijp2yl5p3k8"]
+
+[ext_resource type="Script" uid="uid://c00pucr40iyo6" path="res://main.gd" id="1_oi1ur"]
+[ext_resource type="Texture2D" uid="uid://kko75fxu1e55" path="res://tilemap_architectum2.png" id="2_ilt5p"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2pi7f"]
+texture = ExtResource("2_ilt5p")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_wdk05"]
+tile_size = Vector2i(64, 64)
+sources/4 = SubResource("TileSetAtlasSource_2pi7f")
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_oi1ur")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+use_parent_material = true
+tile_set = SubResource("TileSet_wdk05")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="RoomPalette" type="VBoxContainer" parent="UI"]
+z_index = 5
+offset_right = 192.0
+offset_bottom = 648.0
+mouse_filter = 0
+
+[node name="InfoLabel" type="Label" parent="UI"]
+offset_left = 768.0
+offset_top = 8.0
+offset_right = 1136.0
+offset_bottom = 56.0
+horizontal_alignment = 2
+autowrap_mode = 3
+
+[node name="RoomLabel" type="Label" parent="UI"]
+offset_left = 768.0
+offset_top = 56.0
+offset_right = 1136.0
+offset_bottom = 96.0
+horizontal_alignment = 2
+autowrap_mode = 3

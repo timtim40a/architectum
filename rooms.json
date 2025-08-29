@@ -1,0 +1,55 @@
+{
+  "Kitchen": {
+	"tile_id": 0,
+	"atlas_coord": [0,0],
+	"unlocked": true,
+	"effect": "",
+	"value": 0,
+	"adjacency": {
+		"Bedroom" : {
+			"room": [1,1],
+			"effect" : "Comfort",
+			"value" : 1
+		},
+		"DiningRoom" : {
+			"room": [2,0],
+			"effect": "Prestige",
+			"value": 1
+		}
+	}
+  },
+  "Bedroom": {
+	"tile_id": 1,
+	"atlas_coord": [1,1],
+	"unlocked": true,
+	"effect": "Abode",
+	"value": 1,
+	"adjacency": {
+		"Kitchen" : {
+			"room": [0,0],
+			"effect" : "Comfort",
+			"value" : 1
+		}
+	}
+  },
+  "DiningHall": {
+	"tile_id": 2,
+	"atlas_coord": [2,0],
+	"unlocked": true,
+	"effect": "",
+	"value": 0,
+	"adjacency": {
+		"Kitchen" : {
+			"room": [0,0],
+			"effect" : "Prestige",
+			"value" : 1
+		}
+	}
+  },
+  "FeastHall" : {
+	"tile_id": 2,
+	"atlas_coord": [2,0],
+	"unlocked": false,
+	"adjacency": {}
+  }
+}
