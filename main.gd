@@ -12,12 +12,6 @@ var current_room = null
 var comfort = 0
 
 
-#signal room_placed
-
-#func _on_room_placed():
-	
-
-
 func make_room_buttons():
 	var palette = $UI/RoomPalette
 	
