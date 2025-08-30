@@ -38,6 +38,7 @@
 	"unlocked": true,
 	"effect": "",
 	"value": 0,
+	"composite": ["line", 3, [4,2]],
 	"adjacency": {
 		"Kitchen" : {
 			"room": [0,0],
@@ -47,9 +48,11 @@
 	}
   },
   "FeastHall" : {
-	"tile_id": 2,
-	"atlas_coord": [2,0],
+	"tile_id": 3,
+	"atlas_coord": [4,2],
 	"unlocked": false,
+	"effect": "Prestige",
+	"value": 7,
 	"adjacency": {}
   }
 }
