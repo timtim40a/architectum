@@ -1,7 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://b2ijp2yl5p3k8"]
+[gd_scene load_steps=8 format=3 uid="uid://b2ijp2yl5p3k8"]
 
 [ext_resource type="Script" uid="uid://c00pucr40iyo6" path="res://main.gd" id="1_oi1ur"]
 [ext_resource type="Texture2D" uid="uid://kko75fxu1e55" path="res://tilemap_architectum2.png" id="2_ilt5p"]
+[ext_resource type="Script" uid="uid://b4lwjif6xdt13" path="res://room_manager.gd" id="3_cm0pq"]
+[ext_resource type="Script" uid="uid://bi6p3puchang8" path="res://ui_manager.gd" id="3_r0du0"]
+[ext_resource type="Script" uid="uid://cu53roas08gmq" path="res://resource_manager.gd" id="4_fos0i"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2pi7f"]
 texture = ExtResource("2_ilt5p")
@@ -110,3 +113,18 @@ offset_right = 1136.0
 offset_bottom = 96.0
 horizontal_alignment = 2
 autowrap_mode = 3
+
+[node name="RoomManager" type="Node" parent="."]
+script = ExtResource("3_cm0pq")
+
+[node name="ResourceManager" type="Node" parent="."]
+script = ExtResource("4_fos0i")
+
+[node name="UIManager" type="Node" parent="."]
+script = ExtResource("3_r0du0")
+
+[node name="CompoundRoomManager" type="Node" parent="."]
+
+[connection signal="resources_updated" from="RoomManager" to="ResourceManager" method="_on_resources_updated"]
+[connection signal="room_list_updated" from="RoomManager" to="UIManager" method="_on_room_list_updated"]
+[connection signal="room_placed" from="RoomManager" to="RoomManager" method="_on_room_placed"]
