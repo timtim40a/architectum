@@ -26,3 +26,6 @@ func _on_room_button_pressed(room_name):
 	
 func get_selected_room():
 	return selected_room
+
+func _on_save_house_button_pressed() -> void:
+	pass # Replace with function body.

@@ -5,7 +5,7 @@ var resourceMap = {"Comfort":0,"Abode":0,"Prestige":0}
 
 func _on_resources_updated(effects: Dictionary) -> void:
 	for i in effects.keys():
-		resourceMap[i] += effects[i]
+		resourceMap.set(i, effects[i] + resourceMap.get(i))
 	display_resources()
 		
 		
