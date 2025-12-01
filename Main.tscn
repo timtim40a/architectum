@@ -313,14 +313,14 @@ offset_bottom = 96.0
 horizontal_alignment = 2
 autowrap_mode = 3
 
-[node name="TextEdit" type="TextEdit" parent="UI"]
+[node name="HouseNameInput" type="TextEdit" parent="UI"]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 192.0
 offset_bottom = 48.0
 placeholder_text = "Name the house..."
 
-[node name="Button" type="Button" parent="UI"]
+[node name="SaveHouseButton" type="Button" parent="UI"]
 offset_left = 8.0
 offset_top = 48.0
 offset_right = 192.0
@@ -344,20 +344,6 @@ offset_right = 192.0
 offset_bottom = 136.0
 toggle_mode = true
 text = "Delete Rooms"
-
-[node name="SaveHouseButton" type="Button" parent="UI"]
-offset_left = 1040.0
-offset_top = 608.0
-offset_right = 1144.0
-offset_bottom = 632.0
-text = "Save Building"
-
-[node name="HouseNameInput" type="TextEdit" parent="UI"]
-offset_left = 1040.0
-offset_top = 568.0
-offset_right = 1152.0
-offset_bottom = 604.0
-placeholder_text = "Untitled"
 
 [node name="RoomManager" type="Node" parent="."]
 script = ExtResource("3_cm0pq")
@@ -385,11 +371,9 @@ script = ExtResource("8_trn2v")
 [node name="Grid" type="Node2D" parent="CanvasLayer"]
 script = ExtResource("9_03owx")
 
-[connection signal="pressed" from="UI/Button" to="HouseManager" method="_on_save_house_button_pressed"]
+[connection signal="pressed" from="UI/SaveHouseButton" to="HouseManager" method="_on_save_house_button_pressed"]
 [connection signal="toggled" from="UI/DeleteButton" to="RoomManager" method="_on_delete_button_toggled"]
 [connection signal="toggled" from="UI/DeleteButton" to="UIManager" method="_on_delete_button_toggled"]
-[connection signal="pressed" from="UI/SaveHouseButton" to="UIManager" method="_on_save_house_button_pressed"]
-[connection signal="pressed" from="UI/SaveHouseButton" to="HouseManager" method="_on_save_house_button_pressed"]
 [connection signal="resources_updated" from="RoomManager" to="ResourceManager" method="_on_resources_updated"]
 [connection signal="room_list_updated" from="RoomManager" to="UIManager" method="_on_room_list_updated"]
 [connection signal="room_placed" from="RoomManager" to="RoomManager" method="_on_room_placed"]

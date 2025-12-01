@@ -7,7 +7,7 @@
 	"value": 0,
 	"adjacency": {
 	  "Bedroom": { "effect": "Comfort", "value": 1 },
-	  "DiningHall": { "effect": "Prestige", "value": 1 }
+	  "Dining Hall": { "effect": "Prestige", "value": 1 }
 	}
   },
   "Bedroom": {
@@ -20,18 +20,18 @@
 	  "Cellar": { "effect": "Comfort", "value": 1 }
 	}
   },
-  "DiningHall": {
+  "Dining Hall": {
 	"tile_id": 2,
 	"atlas_coord": [6,3],
 	"unlocked": true,
 	"effect": "",
 	"value": 0,
-	"composite": {"type": "line", "length": 3, "composite_name":"FeastHall"},
+	"composite": {"type": "line", "length": 3, "composite_name":"Feast Hall"},
 	"adjacency": {
 	  "Cellar": { "effect": "Prestige", "value": 1 }
 	}
   },
-  "FeastHall": {
+  "Feast Hall": {
 	"tile_id": 3,
 	"atlas_coord": [0,5],
 	"alt_atlas_coord": [3,4],
