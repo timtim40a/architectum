@@ -1,119 +1,230 @@
 extends Node
 
+# Signals (same as before)
 signal room_list_updated(rooms: Dictionary)
-signal resources_updated(effects: Dictionary)
+signal resources_updated(effects: Dictionary, is_deleting: bool)
 signal room_placed(current_room: String, cell: Vector2i)
-@onready var tilemap = $"../TileMapLayer"
 
-var availableRooms = {}
-var roomMap = {
-	Vector2i(-1,-1):"-empty-",
-	Vector2i(0,0):"Kitchen", 
-	Vector2i(1,1):"Bedroom", 
-	Vector2i(2,0):"DiningHall",#
-	Vector2i(4,2):"FeastHall"
-}
+@onready var tilemap := $"../TileMapLayer"
 
-func _on_room_placed(current_room, cell):
-	
-	if !availableRooms[current_room]["unlocked"]:
-		availableRooms[current_room]["unlocked"] = true
-		
-	
-	if availableRooms[current_room]["effect"]:
-		var roomEffect = availableRooms[current_room]["effect"]
-		emit_signal("resources_updated",{roomEffect: availableRooms[current_room]["value"]})
-			
-			
-	if availableRooms[current_room]["adjacency"]:
-		var roomAdjProps = availableRooms[current_room]["adjacency"]
-		var offsets = [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]
-		
-		for offset in offsets:
-			var neighbour_cell = cell + offset
-			var neighbour_name = roomMap.get(tilemap.get_cell_atlas_coords(neighbour_cell), "-empty-")
-			if roomAdjProps.has(neighbour_name):
-				var roomEffect = roomAdjProps[neighbour_name]["effect"]
-				emit_signal("resources_updated",{roomEffect: roomAdjProps[neighbour_name]["value"]})
-			print(neighbour_name)
-		
-	
-		
-	if availableRooms[current_room].has("composite"):
-		print("placed room has a composite room")
-		var compositeProps = availableRooms[current_room]["composite"]
-		if compositeProps[0] == "line":
-			print("in a form of " + str(compositeProps[0]) + " of minimal size " + str(compositeProps[1]))
-			var directions = [Vector2i(1,0), Vector2i(0,1)]  # horizontal (→), vertical (↓)
-			for dir in directions:
-				# count consecutive rooms in both directions
-				var matched_cells: Array[Vector2i] = [cell]
+# --- Data stores ---
+var available_rooms: Dictionary = {}        # room_name -> properties (from JSON)
+var name_to_atlas: Dictionary = {}          # room_name -> Vector2i atlas coord (for rendering)
+var atlas_to_name: Dictionary = {}          # Vector2i(atlas) -> room_name (if ever needed)
 
-				# forward
-				var pos = cell + dir
-				while roomMap.get(tilemap.get_cell_atlas_coords(pos), "") == current_room:
-					matched_cells.append(pos)
-					pos += dir
-				print(pos)
+# The canonical logical map: cell (Vector2i) -> room_name (String)
+var room_map: Dictionary = {}   # use Vector2i keys, string values. Empty / absent -> "-empty-"
 
-				# backward
-				pos = cell - dir
-				while roomMap.get(tilemap.get_cell_atlas_coords(pos), "") == current_room:
-					matched_cells.append(pos)
-					pos -= dir
-				print(pos)
+var is_deleting = false
 
-				print(matched_cells)
-				if matched_cells.size() >= compositeProps[1]:
-					_upgrade_to_line_compound_room(matched_cells, Vector2i(compositeProps[2][0],compositeProps[2][1]))
-					return  # stop after first match
+# Useful adjacency offsets (4-neighbour)
+const ADJ_OFFSETS: Array = [ Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1) ]
 
-
-func _upgrade_to_line_compound_room(cells: Array[Vector2i], upgrade_room: Vector2i):
-	# Decide which cell is the "main" one
-	var center_cell = cells[cells.size() / 2]
-	var is_vertical = false
-	var rotation = 0
-	
-	if center_cell.x == cells[0].x:
-		is_vertical = true
-		rotation = 1
-		
-
-	# Place upgraded room at center
-	tilemap.set_cell(center_cell, 4, upgrade_room, rotation)
-	
-	emit_signal("room_placed", roomMap[upgrade_room], center_cell)
-
-	# Clear the rest (optional)
-	for c in cells:
-		if c != center_cell:
-			roomMap[c] = "-empty-"
-			tilemap.set_cell(c, 4, Vector2i(-1,-1))
-
-	print(roomMap[upgrade_room] + " created at " + str(center_cell))
-	
-func place_room(cell: Vector2i, room_name: String):
-
-	# Look up which atlas coord to use for this room
-	var atlas = availableRooms[room_name]["atlas_coord"]
-	var atlas_coord = Vector2i(atlas[0], atlas[1])
-	
-
-	# Place that tile in the grid
-	tilemap.set_cell(cell, 4, atlas_coord)
-	print(room_name + " has been placed at " + str(cell))
-	
-	emit_signal("room_placed", room_name, cell)
-	# Arguments:
-	#   layer = 0
-	#   cell position = cell
-	#   source_id = 0 (your TileSet resource ID, usually 0 if one TileSet)
-	#   atlas_coord = coords of the sprite in the atlas
-
+# -------------------------
+# Lifecycle
+# -------------------------
 func _ready() -> void:
-	var file = FileAccess.open("res://rooms.json", FileAccess.READ)
-	var text = file.get_as_text()
-	availableRooms = JSON.parse_string(text)
-	file.close()
-	emit_signal("room_list_updated", availableRooms)
+	_load_rooms_json("res://rooms.json")
+	emit_signal("room_list_updated", available_rooms)
+
+
+# -------------------------
+# Loading & normalization
+# -------------------------
+func _load_rooms_json(path: String) -> void:
+	var f = FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		push_error("Could not open rooms.json at %s" % path)
+		return
+	var text = f.get_as_text()
+	f.close()
+
+	var result = JSON.parse_string(text)
+	if !result:
+		push_error("Failed to parse rooms.json")
+		return
+
+	available_rooms = result
+
+	# Normalize atlas coords and build helper maps
+	name_to_atlas.clear()
+	atlas_to_name.clear()
+	for room_name in available_rooms.keys():
+		var info = available_rooms[room_name]
+		# Normalize atlas coordinate to Vector2i if present as array
+		if info.has("atlas_coord") and typeof(info["atlas_coord"]) == TYPE_ARRAY:
+			var a = info["atlas_coord"]
+			var v = Vector2i(int(a[0]), int(a[1]))
+			info["atlas_coord"] = v
+			name_to_atlas[room_name] = v
+			atlas_to_name[v] = room_name
+		if info.has("alt_atlas_coord") and typeof(info["alt_atlas_coord"]) == TYPE_ARRAY:
+			var a = info["alt_atlas_coord"]
+			var v = Vector2i(int(a[0]), int(a[1]))
+			info["alt_atlas_coord"] = v
+			name_to_atlas["alt"+room_name] = v
+			atlas_to_name[v] = "alt"+room_name
+
+# -------------------------
+# Public API
+# -------------------------
+func get_room_at(cell: Vector2i) -> String:
+	if room_map.has(cell):
+		return room_map[cell]
+	return "-empty-"
+
+func set_room_at(cell: Vector2i, room_name: String) -> void:
+	room_map[cell] = room_name
+
+func clear_room_at(cell: Vector2i) -> void:
+	var room_cleared : String
+	if room_map.has(cell):
+		room_cleared = room_map.get(cell)
+		room_map.erase(cell)
+		
+		if available_rooms.has(room_cleared) and available_rooms[room_cleared].has("effect") and available_rooms[room_cleared]["effect"] != null:
+			var eff_type = available_rooms[room_cleared]["effect"]
+			var eff_val = int(available_rooms[room_cleared].get("value", 0))
+			_emit_resource_effect(eff_type, eff_val, is_deleting)
+		
+		var adj: Dictionary = available_rooms[room_cleared]["adjacency"]
+		for offset in ADJ_OFFSETS:
+			var ncell = cell + offset
+			var neighbour_name = get_room_at(ncell)
+			if neighbour_name != "-empty-" and adj.has(neighbour_name):
+				var props = adj[neighbour_name]
+				if props.has("effect") and props["effect"] != null:
+					_emit_resource_effect(props["effect"], int(props.get("value", 0)), is_deleting)
+	# Clear visual too: set an empty atlas (use -1,-1)
+	tilemap.set_cell(cell, 4, Vector2i(-1, -1))
+
+# Place a room by name. Responsible for visuals + logical mapping + emitting room_placed
+func place_room(cell: Vector2i, room_name: String) -> void:
+	
+	if is_deleting:
+		clear_room_at(cell)
+		return
+	
+	if not available_rooms.has(room_name):
+		push_error("place_room: unknown room: %s" % room_name)
+		return
+		
+	if get_room_at(cell) != "-empty-":
+		push_error("room already exists at: %s" % cell)
+		return
+
+	# Put the atlas tile (visual)
+	var atlas_coord: Vector2i = name_to_atlas.get(room_name, Vector2i(-1,-1))
+	tilemap.set_cell(cell, 4, atlas_coord)
+
+	# Set the logical map
+	set_room_at(cell, room_name)
+
+	# Inform listeners
+	emit_signal("room_placed", room_name, cell)
+	print("%s placed at %s" % [room_name, str(cell)])
+
+func _on_delete_button_toggled(toggled_on = false):
+	is_deleting = toggled_on
+	
+# -------------------------
+# Event handling: when a room is placed (either from place_room or elsewhere)
+# -------------------------
+func _on_room_placed(current_room: String, cell: Vector2i) -> void:
+	# Unlock it if locked
+	if available_rooms.has(current_room) and available_rooms[current_room].has("unlocked") and not available_rooms[current_room]["unlocked"]:
+		available_rooms[current_room]["unlocked"] = true
+
+	# Apply the room's base effect (if present)
+	if available_rooms.has(current_room) and available_rooms[current_room].has("effect") and available_rooms[current_room]["effect"] != null:
+		var eff_type = available_rooms[current_room]["effect"]
+		var eff_val = int(available_rooms[current_room].get("value", 0))
+		_emit_resource_effect(eff_type, eff_val)
+
+	# Check adjacency effects (neighbours)
+	if available_rooms.has(current_room) and available_rooms[current_room].has("adjacency"):
+		var adj: Dictionary = available_rooms[current_room]["adjacency"]
+		for offset in ADJ_OFFSETS:
+			var ncell = cell + offset
+			var neighbour_name = get_room_at(ncell)
+			if neighbour_name != "-empty-" and adj.has(neighbour_name):
+				var props = adj[neighbour_name]
+				if props.has("effect") and props["effect"] != null:
+					_emit_resource_effect(props["effect"], int(props.get("value", 0)))
+
+	# Composite check (e.g., lines)
+	if available_rooms.has(current_room) and available_rooms[current_room].has("composite") and available_rooms[current_room]["composite"] != null:
+		_check_and_apply_composite(current_room, cell, available_rooms[current_room]["composite"])
+
+# -------------------------
+# Composite handling (line-type only implemented here)
+# -------------------------
+func _check_and_apply_composite(room_name: String, cell: Vector2i, composite_props: Dictionary) -> void:
+	if composite_props.get("type", "") != "line":
+		return
+
+	var min_len: int = int(composite_props.get("length", 0))
+	var composite_name: String = composite_props.get("composite_name", null)
+	var rotation = 0 # horizontal by default
+	# directions to check: horizontal and vertical (only 2 directions required because we look both ways)
+	var directions = [ Vector2i(1,0), Vector2i(0,1) ]
+	
+	if composite_name == null:
+		print("Error: upgrade with name %s is non-existent" % [composite_name])
+		return
+
+	for dir in directions:
+		var matched_cells: Array = []
+		# include the just-placed cell
+		matched_cells.append(cell)
+
+		# forward direction
+		var pos = cell + dir
+		while get_room_at(pos) == room_name:
+			matched_cells.append(pos)
+			pos += dir
+
+		# backward direction
+		pos = cell - dir
+		while get_room_at(pos) == room_name:
+			matched_cells.append(pos)
+			pos -= dir
+
+		# now we have all contiguous cells for this line
+		if matched_cells.size() >= min_len:
+			# sort cells to pick a reliable center (by coordinates)
+			matched_cells.sort_custom(Callable(self, "_vec2i_sort"))
+			var center_index := int(matched_cells.size() / 2)
+			var center_cell: Vector2i = matched_cells[center_index]
+			var composite_atlas: Vector2i = name_to_atlas[composite_name] if dir[0] else name_to_atlas["alt" + composite_name]
+			print(composite_name + " " + str(composite_atlas))
+
+			# Place upgraded tile visually at center and set logic
+			tilemap.set_cell(center_cell, 4, composite_atlas)
+			set_room_at(center_cell, composite_name)
+
+			# Clear other cells visually and in logic
+			for c in matched_cells:
+				if c != center_cell:
+					clear_room_at(c)
+
+			# Emit that we created a new room (signals, resource effects if any)
+			emit_signal("room_placed", composite_name, center_cell)
+			print("%s created at %s by combining %s cells" % [composite_name, str(center_cell), str(matched_cells.size())])
+			# Stop after making the first valid composite
+			return
+
+# helper comparator for sorting Vector2i arrays (by x then y)
+func _vec2i_sort(a: Vector2i, b: Vector2i) -> bool:
+	if a.x == b.x:
+		return a.y < b.y
+	return a.x < b.x
+
+# -------------------------
+# Utility
+# -------------------------
+func _emit_resource_effect(effect_type: String, value: int, is_deleting = false) -> void:
+	print(effect_type + " " + str(value))
+	if effect_type == null or effect_type == "":
+		return
+	emit_signal("resources_updated", { effect_type: value }, is_deleting)
