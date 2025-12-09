@@ -8,12 +8,14 @@ signal room_placed(current_room: String, cell: Vector2i)
 @onready var tilemap := $"../TileMapLayer"
 
 # --- Data stores ---
-var available_rooms: Dictionary = {}        # room_name -> properties (from JSON)
-var name_to_atlas: Dictionary = {}          # room_name -> Vector2i atlas coord (for rendering)
-var atlas_to_name: Dictionary = {}          # Vector2i(atlas) -> room_name (if ever needed)
+var available_rooms: Array = []       # room_name -> properties (from JSON)
+var atlas_to_room: Dictionary = {}          # Vector2i(atlas) -> Room (if ever needed)
 
 # The canonical logical map: cell (Vector2i) -> room_name (String)
-var room_map: Dictionary = {}   # use Vector2i keys, string values. Empty / absent -> "-empty-"
+var room_defs: Dictionary = {}              # room_name -> Room
+var room_map: Dictionary = {}               # Vector2i -> Room
+
+
 
 var is_deleting = false
 
@@ -36,65 +38,58 @@ func _load_rooms_json(path: String) -> void:
 	if f == null:
 		push_error("Could not open rooms.json at %s" % path)
 		return
+
 	var text = f.get_as_text()
 	f.close()
 
-	var result = JSON.parse_string(text)
-	if !result:
+	var rooms = JSON.parse_string(text)
+	if !rooms:
 		push_error("Failed to parse rooms.json")
 		return
 
-	available_rooms = result
+	room_defs.clear()
+	for room_name in rooms.keys():
+		var room_data: Dictionary = rooms[room_name]
+		room_data["name"] = room_name  # Inject the name
 
-	# Normalize atlas coords and build helper maps
-	name_to_atlas.clear()
-	atlas_to_name.clear()
-	for room_name in available_rooms.keys():
-		var info = available_rooms[room_name]
-		# Normalize atlas coordinate to Vector2i if present as array
-		if info.has("atlas_coord") and typeof(info["atlas_coord"]) == TYPE_ARRAY:
-			var a = info["atlas_coord"]
+		var room_init = Room.new(room_data)  # ✅ Pass Dictionary
+		room_defs[room_init.name] = room_init
+
+		# Build atlas_to_name map if needed
+		if room_data.has("atlas_coord") and typeof(room_data["atlas_coord"]) == TYPE_ARRAY:
+			var a = room_data["atlas_coord"]
 			var v = Vector2i(int(a[0]), int(a[1]))
-			info["atlas_coord"] = v
-			name_to_atlas[room_name] = v
-			atlas_to_name[v] = room_name
-		if info.has("alt_atlas_coord") and typeof(info["alt_atlas_coord"]) == TYPE_ARRAY:
-			var a = info["alt_atlas_coord"]
+			atlas_to_room[v] = room_init
+
+		if room_data.has("alt_atlas_coord") and typeof(room_data["alt_atlas_coord"]) == TYPE_ARRAY:
+			var a = room_data["alt_atlas_coord"]
 			var v = Vector2i(int(a[0]), int(a[1]))
-			info["alt_atlas_coord"] = v
-			name_to_atlas["alt"+room_name] = v
-			atlas_to_name[v] = "alt"+room_name
+			atlas_to_room[v] = room_init
+
+		if room_data.get("unlocked", false):
+			available_rooms.append(room_name)
 
 # -------------------------
 # Public API
 # -------------------------
-func get_room_at(cell: Vector2i) -> String:
-	if room_map.has(cell):
-		return room_map[cell]
-	return "-empty-"
+func get_room_at(cell: Vector2i) -> Room:
+	return room_map.get(cell, null)
 
-func set_room_at(cell: Vector2i, room_name: String) -> void:
-	room_map[cell] = room_name
+func set_room_at(cell: Vector2i, room_name: String ) -> void:
+	room_map[cell] = room_defs.get(room_name)
 
 func clear_room_at(cell: Vector2i) -> void:
-	var room_cleared : String
+	var room_cleared : Room
 	if room_map.has(cell):
-		room_cleared = room_map.get(cell)
+		room_cleared = get_room_at(cell)
 		room_map.erase(cell)
 		
-		if available_rooms.has(room_cleared) and available_rooms[room_cleared].has("effect") and available_rooms[room_cleared]["effect"] != null:
-			var eff_type = available_rooms[room_cleared]["effect"]
-			var eff_val = int(available_rooms[room_cleared].get("value", 0))
+		if room_cleared.base_effect_type != null:
+			var eff_type = room_cleared.base_effect_type
+			var eff_val = room_cleared.base_effect_value
 			_emit_resource_effect(eff_type, eff_val, is_deleting)
 		
-		var adj: Dictionary = available_rooms[room_cleared]["adjacency"]
-		for offset in ADJ_OFFSETS:
-			var ncell = cell + offset
-			var neighbour_name = get_room_at(ncell)
-			if neighbour_name != "-empty-" and adj.has(neighbour_name):
-				var props = adj[neighbour_name]
-				if props.has("effect") and props["effect"] != null:
-					_emit_resource_effect(props["effect"], int(props.get("value", 0)), is_deleting)
+		check_adjacency_effects(room_cleared, cell, is_deleting)
 	# Clear visual too: set an empty atlas (use -1,-1)
 	tilemap.set_cell(cell, 4, Vector2i(-1, -1))
 
@@ -109,12 +104,12 @@ func place_room(cell: Vector2i, room_name: String) -> void:
 		push_error("place_room: unknown room: %s" % room_name)
 		return
 		
-	if get_room_at(cell) != "-empty-":
+	if get_room_at(cell) != null:
 		push_error("room already exists at: %s" % cell)
 		return
 
 	# Put the atlas tile (visual)
-	var atlas_coord: Vector2i = name_to_atlas.get(room_name, Vector2i(-1,-1))
+	var atlas_coord: Vector2i = room_defs.get(room_name).atlas 
 	tilemap.set_cell(cell, 4, atlas_coord)
 
 	# Set the logical map
@@ -130,48 +125,49 @@ func _on_delete_button_toggled(toggled_on = false):
 # -------------------------
 # Event handling: when a room is placed (either from place_room or elsewhere)
 # -------------------------
-func _on_room_placed(current_room: String, cell: Vector2i) -> void:
+func _on_room_placed(current_room_name: String, cell: Vector2i) -> void:
 	# Unlock it if locked
-	if available_rooms.has(current_room) and available_rooms[current_room].has("unlocked") and not available_rooms[current_room]["unlocked"]:
-		available_rooms[current_room]["unlocked"] = true
+	var current_room: Room = room_defs.get(current_room_name)
+	if available_rooms.find(current_room_name) == -1:
+		available_rooms.append(current_room_name)
+		emit_signal("room_list_updated", available_rooms)
 
 	# Apply the room's base effect (if present)
-	if available_rooms.has(current_room) and available_rooms[current_room].has("effect") and available_rooms[current_room]["effect"] != null:
-		var eff_type = available_rooms[current_room]["effect"]
-		var eff_val = int(available_rooms[current_room].get("value", 0))
+	if current_room.base_effect_type != null:
+		var eff_type = current_room.base_effect_type
+		var eff_val = current_room.base_effect_value
 		_emit_resource_effect(eff_type, eff_val)
 
 	# Check adjacency effects (neighbours)
-	if available_rooms.has(current_room) and available_rooms[current_room].has("adjacency"):
-		var adj: Dictionary = available_rooms[current_room]["adjacency"]
-		for offset in ADJ_OFFSETS:
-			var ncell = cell + offset
-			var neighbour_name = get_room_at(ncell)
-			if neighbour_name != "-empty-" and adj.has(neighbour_name):
-				var props = adj[neighbour_name]
-				if props.has("effect") and props["effect"] != null:
-					_emit_resource_effect(props["effect"], int(props.get("value", 0)))
+	check_adjacency_effects(current_room, cell)
 
 	# Composite check (e.g., lines)
-	if available_rooms.has(current_room) and available_rooms[current_room].has("composite") and available_rooms[current_room]["composite"] != null:
-		_check_and_apply_composite(current_room, cell, available_rooms[current_room]["composite"])
+	if current_room.composite != null:
+		_check_and_apply_composite(current_room, cell)
+
+func check_adjacency_effects(current_room: Room, cell: Vector2i, is_deleting = false) -> void:
+	if current_room.adjacency != null and current_room.adjacency.size() > 0:
+		var adj: Dictionary = current_room.adjacency
+		for offset in ADJ_OFFSETS:
+			var ncell = cell + offset
+			var neighbour = get_room_at(ncell)
+			if neighbour != null and adj.has(neighbour.name):
+				var props = adj[neighbour.name]
+				if props.has("effect") and props["effect"] != null:
+					_emit_resource_effect(props["effect"], int(props.get("value", 0)), is_deleting)
 
 # -------------------------
 # Composite handling (line-type only implemented here)
 # -------------------------
-func _check_and_apply_composite(room_name: String, cell: Vector2i, composite_props: Dictionary) -> void:
+func _check_and_apply_composite(room: Room, cell: Vector2i) -> void:
+	var composite_props: Dictionary = room.composite
 	if composite_props.get("type", "") != "line":
 		return
 
 	var min_len: int = int(composite_props.get("length", 0))
 	var composite_name: String = composite_props.get("composite_name", null)
-	var rotation = 0 # horizontal by default
 	# directions to check: horizontal and vertical (only 2 directions required because we look both ways)
 	var directions = [ Vector2i(1,0), Vector2i(0,1) ]
-	
-	if composite_name == null:
-		print("Error: upgrade with name %s is non-existent" % [composite_name])
-		return
 
 	for dir in directions:
 		var matched_cells: Array = []
@@ -180,13 +176,13 @@ func _check_and_apply_composite(room_name: String, cell: Vector2i, composite_pro
 
 		# forward direction
 		var pos = cell + dir
-		while get_room_at(pos) == room_name:
+		while get_room_at(pos) == room:
 			matched_cells.append(pos)
 			pos += dir
 
 		# backward direction
 		pos = cell - dir
-		while get_room_at(pos) == room_name:
+		while get_room_at(pos) == room:
 			matched_cells.append(pos)
 			pos -= dir
 
@@ -196,7 +192,7 @@ func _check_and_apply_composite(room_name: String, cell: Vector2i, composite_pro
 			matched_cells.sort_custom(Callable(self, "_vec2i_sort"))
 			var center_index := int(matched_cells.size() / 2)
 			var center_cell: Vector2i = matched_cells[center_index]
-			var composite_atlas: Vector2i = name_to_atlas[composite_name] if dir[0] else name_to_atlas["alt" + composite_name]
+			var composite_atlas: Vector2i = room_defs.get(composite_name).atlas if dir[0] else room_defs.get(composite_name).alt_atlas
 			print(composite_name + " " + str(composite_atlas))
 
 			# Place upgraded tile visually at center and set logic
