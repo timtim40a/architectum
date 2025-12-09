@@ -21,6 +21,10 @@ config/icon="res://icon.svg"
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
 
+[gui]
+
+theme/custom_font="uid://qgilm3g5cyej"
+
 [input]
 
 place_click={
