@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b2ijp2yl5p3k8"]
+[gd_scene load_steps=17 format=3 uid="uid://b2ijp2yl5p3k8"]
 
 [ext_resource type="Script" uid="uid://c00pucr40iyo6" path="res://main.gd" id="1_oi1ur"]
 [ext_resource type="Texture2D" uid="uid://kko75fxu1e55" path="res://tilemap_architectum2.png" id="2_ilt5p"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://cb7is4m5cvjnx" path="res://house_manager.gd" id="6_3dxm6"]
 [ext_resource type="Script" uid="uid://cjsn2n4cgvvc3" path="res://camera.gd" id="8_trn2v"]
 [ext_resource type="Script" uid="uid://b5pv1mvif6yck" path="res://grid_draw.gd" id="9_03owx"]
+[ext_resource type="Shader" uid="uid://dkobxlarsbbq8" path="res://crt.gdshader" id="10_wkp8b"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2pi7f"]
 texture = ExtResource("2_ilt5p")
@@ -284,6 +285,17 @@ texture_region_size = Vector2i(64, 64)
 tile_size = Vector2i(64, 64)
 sources/1 = SubResource("TileSetAtlasSource_lgr22")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_20pc6"]
+shader = ExtResource("10_wkp8b")
+shader_parameter/scanline_color = Color(0, 0, 0, 1)
+shader_parameter/flicker_color = Color(0, 0, 0, 1)
+shader_parameter/scanlines_count = 10.0
+shader_parameter/scanlines_intensity = 0.05
+shader_parameter/flicker_speed = 30.0
+shader_parameter/flicker_intensity = 0.025
+shader_parameter/color_offset = 1.5
+shader_parameter/blur = 0.15
+
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_oi1ur")
 
@@ -370,6 +382,14 @@ script = ExtResource("8_trn2v")
 
 [node name="Grid" type="Node2D" parent="CanvasLayer"]
 script = ExtResource("9_03owx")
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+
+[node name="CRT" type="ColorRect" parent="CanvasLayer2"]
+z_index = 2000
+material = SubResource("ShaderMaterial_20pc6")
+offset_right = 1152.0
+offset_bottom = 648.0
 
 [connection signal="pressed" from="UI/SaveHouseButton" to="HouseManager" method="_on_save_house_button_pressed"]
 [connection signal="toggled" from="UI/DeleteButton" to="RoomManager" method="_on_delete_button_toggled"]

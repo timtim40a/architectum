@@ -87,9 +87,9 @@ func clear_room_at(cell: Vector2i) -> void:
 		if room_cleared.base_effect_type != null:
 			var eff_type = room_cleared.base_effect_type
 			var eff_val = room_cleared.base_effect_value
-			_emit_resource_effect(eff_type, eff_val, is_deleting)
+			_emit_resource_effect(eff_type, eff_val, true)
 		
-		check_adjacency_effects(room_cleared, cell, is_deleting)
+		check_adjacency_effects(room_cleared, cell, true)
 	# Clear visual too: set an empty atlas (use -1,-1)
 	tilemap.set_cell(cell, 4, Vector2i(-1, -1))
 
@@ -194,6 +194,8 @@ func _check_and_apply_composite(room: Room, cell: Vector2i) -> void:
 			var center_cell: Vector2i = matched_cells[center_index]
 			var composite_atlas: Vector2i = room_defs.get(composite_name).atlas if dir[0] else room_defs.get(composite_name).alt_atlas
 			print(composite_name + " " + str(composite_atlas))
+			for v in matched_cells:
+				clear_room_at(v)
 
 			# Place upgraded tile visually at center and set logic
 			tilemap.set_cell(center_cell, 4, composite_atlas)
