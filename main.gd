@@ -9,7 +9,6 @@ var selected_room
 func _ready():
 	hover_cell_getter.preview_grid = $PreviewGrid
 	hover_handler.preview_grid = $PreviewGrid
-	hover_handler.name_to_atlas = $RoomManager.name_to_atlas
 	hover_handler.room_map = $RoomManager.room_map
 	print("Children in palette: ", $UI/RoomPalette.get_child_count())
 	
@@ -37,5 +36,5 @@ func _process(delta):
 			
 	selected_room = $UIManager.get_selected_room()
 	if selected_room != null:
-		hover_handler.do_hover_effect(selected_room, hover_cell_getter.get_hovered_cell(get_global_mouse_position()), $RoomManager.is_deleting)
+		hover_handler.do_hover_effect($RoomManager.room_defs.get(selected_room), hover_cell_getter.get_hovered_cell(get_global_mouse_position()), $RoomManager.is_deleting)
 	
