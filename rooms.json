@@ -1,0 +1,374 @@
+{
+	"rooms": {
+		"Cave": {
+			"tile_id": 0,
+			"atlas_coords": [0, 0],
+			"unlocked": true,
+			"description": "A dark, damp cave that surprisingly has housed its first humans.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["natural"],
+			"placeable_on": ["ground"]
+		},
+		"Empty Room": {
+			"tile_id": 1,
+			"atlas_coords": [1, 0],
+			"unlocked": true,
+			"description": "An empty room.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": [],
+			"placeable_on": ["ground"]
+		},
+		"Cellar": {
+			"tile_id": 2,
+			"atlas_coords": [2, 0],
+			"unlocked": true,
+			"description": "Barely submerged underground, still leads to nice finds.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["underground", "supports_other_buildings"],
+			"placeable_on": ["ground"]
+		},
+		"Scaffolding": {
+			"tile_id": 3,
+			"atlas_coords": [3, 0],
+			"unlocked": true,
+			"description": "Wooden scaffolding that helps reach higher places.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["supports_other_buildings"],
+			"placeable_on": ["ground", "supports_other_buildings"]
+		},
+		"Watchtower Top": {
+			"tile_id": 4,
+			"atlas_coords": [4, 0],
+			"unlocked": true,
+			"description": "The top of a watchtower, providing a good vantage point.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["workplace"],
+			"placeable_on": ["supports_other_buildings"]
+		},
+		"Garden": {
+			"tile_id": 5,
+			"atlas_coords": [5, 0],
+			"unlocked": true,
+			"description": "A lush garden full of vibrant plants and flowers.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["tilled"],
+			"placeable_on": ["ground"]
+		},
+		"Attic": {
+			"tile_id": 6,
+			"atlas_coords": [6, 0],
+			"unlocked": true,
+			"description": "Cramped, but windows face the farlands.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": [""],
+			"placeable_on": ["supports_other_buildings"]
+		},
+		"Kiln": {
+			"tile_id": 7,
+			"atlas_coords": [7, 0],
+			"unlocked": true,
+			"description": "A hot kiln used for firing pottery and bricks.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["workplace"],
+			"placeable_on": ["ground"]
+		},
+		"Passageway": {
+			"tile_id": 8,
+			"atlas_coords": [0, 1],
+			"unlocked": true,
+			"description": "A narrow passageway connecting different areas.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["connective"],
+			"placeable_on": ["ground"]
+		},
+		"Brewery": {
+			"tile_id": 9,
+			"atlas_coords": [1, 1],
+			"unlocked": true,
+			"description": "The yeast odour lives within.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["workplace"],
+			"placeable_on": ["ground"]
+		},
+		"Loom": {
+			"tile_id": 10,
+			"atlas_coords": [2, 1],
+			"unlocked": true,
+			"description": "A room dedicated to weaving fabrics.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["workplace"],
+			"placeable_on": ["ground"]
+		},
+		"Dolmen": {
+			"tile_id": 11,
+			"atlas_coords": [3, 1],
+			"unlocked": true,
+			"description": "The only truly peaceful place.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["spiritual"],
+			"placeable_on": ["ground"]
+		},
+		"Tomb": {
+			"tile_id": 12,
+			"atlas_coords": [4, 1],
+			"unlocked": true,
+			"description": "A tomb to pay respects.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["underground", "spiritual"],
+			"placeable_on": ["ground"]
+		},
+		"Shrine": {
+			"tile_id": 13,
+			"atlas_coords": [5, 1],
+			"unlocked": true,
+			"description": "A small shrine for worship and reflection.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["spiritual"],
+			"placeable_on": ["ground"]
+		},
+		"Chess Room": {
+			"tile_id": 14,
+			"atlas_coords": [6, 1],
+			"unlocked": true,
+			"description": "People having fun, while staring at their tables.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["entertainment"],
+			"placeable_on": ["ground"]
+		},
+		"Meeting Room": {
+			"tile_id": 15,
+			"atlas_coords": [7, 1],
+			"unlocked": true,
+			"description": "A room for gatherings and discussions.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["entertainment"],
+			"placeable_on": ["ground"]
+		},
+		"Stables": {
+			"tile_id": 16,
+			"atlas_coords": [0, 2],
+			"unlocked": true,
+			"description": "Housing horses. Making far reach easier.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["workplace"],
+			"placeable_on": ["ground"]
+		},
+		"Treasury": {
+			"tile_id": 17,
+			"atlas_coords": [1, 2],
+			"unlocked": true,
+			"description": "A secure place to store valuables.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": [""],
+			"placeable_on": ["ground"]
+		},
+		"Ritual Chamber": {
+			"tile_id": 18,
+			"atlas_coords": [2, 2],
+			"unlocked": true,
+			"description": "A chamber for performing rituals and ceremonies.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["spiritual", "entertainment"],
+			"placeable_on": ["ground"]
+		},
+		"Labyrinth": {
+			"tile_id": 19,
+			"atlas_coords": [3, 2],
+			"unlocked": true,
+			"description": "Amaze intruders with a maze.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["tilled"],
+			"placeable_on": ["ground"]
+		},
+		"Corridor": {
+			"tile_id": 20,
+			"atlas_coords": [4, 2],
+			"unlocked": true,
+			"description": "A fancier way to get around.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["connective"],
+			"placeable_on": ["ground"]
+		},
+		"Storytelling Corridor": {
+			"tile_id": 21,
+			"atlas_coords": [5, 2],
+			"unlocked": true,
+			"description": "A fancier way to get around. Now with stories!",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["connective", "cultural"],
+			"placeable_on": ["ground"]
+		},
+		"Exhibition": {
+			"tile_id": 22,
+			"atlas_coords": [6, 2],
+			"unlocked": true,
+			"description": "Show people your masterfulness. Get famous.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["connective", "cultural", "entertainment"],
+			"placeable_on": ["ground"]
+		},
+		"Bar": {
+			"tile_id": 23,
+			"atlas_coords": [7, 2],
+			"unlocked": true,
+			"description": "A place to relax, enjoy drinks and enjoy friends.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["workplace", "entertainment"],
+			"placeable_on": ["ground"]
+		},
+		"Portico": {
+			"tile_id": 24,
+			"atlas_coords": [0, 3],
+			"unlocked": true,
+			"description": "A grand entrance of Roman origin.",
+			"culture": "roman",
+			"religion": "generic",
+			"tags": ["cultural"],
+			"placeable_on": ["ground"]
+		},
+		"Wine Cellar": {
+			"tile_id": 25,
+			"atlas_coords": [1, 3],
+			"unlocked": true,
+			"description": "Barely submerged underground, still leads to fine wines.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["underground"],
+			"placeable_on": ["ground"]
+		},
+		"Outroom": {
+			"tile_id": 26,
+			"atlas_coords": [2, 3],
+			"unlocked": true,
+			"description": "An outroom to let it out.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": [""],
+			"placeable_on": ["ground"]
+		},
+		"Root Cellar": {
+			"tile_id": 27,
+			"atlas_coords": [3, 3],
+			"unlocked": true,
+			"description": "Barely submerged underground, still leads to the very roots.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["underground"],
+			"placeable_on": ["ground"]
+		},
+		"Dome": {
+			"tile_id": 28,
+			"atlas_coords": [4, 3],
+			"unlocked": true,
+			"description": "A grand Roman dome. Awe.",
+			"culture": "roman",
+			"religion": "generic",
+			"tags": ["cultural"],
+			"placeable_on": ["supports_other_buildings"]
+		},
+		"Courtyard Garden": {
+			"tile_id": 29,
+			"atlas_coords": [5, 3],
+			"unlocked": true,
+			"description": "Trees reach to the balconies.",
+			"culture": "roman",
+			"religion": "generic",
+			"tags": ["tilled", "cultural"],
+			"placeable_on": ["ground"]
+		},
+		"Dining Room": {
+			"tile_id": 30,
+			"atlas_coords": [6, 3],
+			"unlocked": true,
+			"description": "Proper seats and proper tables. Not so sure about food.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["entertainment"],
+			"placeable_on": ["ground"]
+		},
+		"Game Room": {
+			"tile_id": 31,
+			"atlas_coords": [7, 3],
+			"unlocked": true,
+			"description": "Features one game: dice.",
+			"culture": "generic",
+			"religion": "generic",
+			"tags": ["entertainment"],
+			"placeable_on": ["ground"]
+		}
+	},
+	"effects": {
+		"Cave": { "Abode": 1 },
+		"Cellar": { "": 0 },
+		"Scaffolding": { "": 0 },
+		"Watchtower Top": { "Vantage": 2, "Defence": 2 },
+		"Garden": { "Comfort": 1 },
+		"Attic": { "Abode": 1, "Vantage": 1 },
+		"Kiln": {},
+		"Passageway": {},
+		"Brewery": {},
+		"Loom": {},
+		"Dolmen": { "Religion": 2, "Comfort": 1 },
+		"Tomb": { "Religion": 1 },
+		"Shrine": { "Religion": 2 },
+		"Chess Room": { "Unity": 1 },
+		"Meeting Room": { "Unity": 3 },
+		"Stables": { "Vantage": 2 },
+		"Treasury": { "Prestige": 3 },
+		"Ritual Chamber": { "Religion": 3, "Unity": 2 },
+		"Labyrinth": { "Defence": 2 },
+		"Corridor": {},
+		"Storytelling Corridor": { "Culture": 2 },
+		"Exhibition": { "Culture": 3, "Prestige": 2 },
+		"Bar": { "Unity": 2, "Comfort": 1 },
+		"Portico": { "Culture": 2, "Prestige": 2 },
+		"Wine Cellar": {},
+		"Outroom": { "Comfort": 1 },
+		"Root Cellar": {},
+		"Dome": { "Culture": 3, "Prestige": 3 },
+		"Courtyard Garden": { "Comfort": 2, "Culture": 2 },
+		"Dining Room": { "Unity": 2, "Comfort": 1 },
+		"Game Room": { "Unity": 2 }
+	},
+	"adjacencies": {
+		"Wine Cellar": {
+			"Bar": { "Comfort": 2 }
+		}
+	},
+	"composites": {
+		"Dining Room": {
+			"type": "line",
+			"length": 3,
+			"composite_name": "Feast Hall"
+		},
+		"Meeting Room": {
+			"type": "line",
+			"length": 3,
+			"composite_name": "Conference Hall"
+		}
+	}
+}

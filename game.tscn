@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://wjs2bvbyguhw"]
+
+[ext_resource type="Texture2D" uid="uid://bgvn8wns46vqi" path="res://tilemap_rooms.png" id="1_80nbo"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e2o6t"]
+texture = ExtResource("1_80nbo")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+7:7/0 = 0
+9:1/size_in_atlas = Vector2i(1, 3)
+9:1/0 = 0
+10:1/size_in_atlas = Vector2i(1, 3)
+10:1/0 = 0
+13:2/size_in_atlas = Vector2i(3, 1)
+13:2/0 = 0
+13:3/size_in_atlas = Vector2i(3, 1)
+13:3/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_feb5d"]
+sources/0 = SubResource("TileSetAtlasSource_e2o6t")
+
+[node name="Game" type="Node2D" unique_id=1308119624]
+
+[node name="Map" type="Node2D" parent="." unique_id=1735417639]
+
+[node name="TerrainLayer" type="TileMapLayer" parent="Map" unique_id=1807995999]
+
+[node name="RoomLayer" type="TileMapLayer" parent="Map" unique_id=2062210323]
+texture_filter = 1
+scale = Vector2(2, 2)
+tile_set = SubResource("TileSet_feb5d")
+
+[node name="PreviewLayer" type="TileMapLayer" parent="Map" unique_id=1697802876]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1155177362]
+
+[node name="LeftPanel" type="FoldableContainer" parent="UI" unique_id=1653895339]
+offset_left = 901.0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="StatResourcePanel" type="VSplitContainer" parent="UI/LeftPanel" unique_id=1904142017]
+layout_mode = 2
+
+[node name="StatsLabels" type="VBoxContainer" parent="UI/LeftPanel/StatResourcePanel" unique_id=196558192]
+layout_mode = 2
+
+[node name="ResourcesLabels" type="VBoxContainer" parent="UI/LeftPanel/StatResourcePanel" unique_id=1808846987]
+layout_mode = 2
+
+[node name="SelectedRoom" type="RichTextLabel" parent="UI/LeftPanel" unique_id=1836818705]
+layout_mode = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="UI" unique_id=1632678465]
+offset_right = 215.0
+offset_bottom = 648.0
+
+[node name="ModeButtons" type="HBoxContainer" parent="UI/RightPanel" unique_id=78899973]
+layout_mode = 2
+
+[node name="PlaceRoomButton" type="Button" parent="UI/RightPanel/ModeButtons" unique_id=1647837023]
+layout_mode = 2
+text = "Place"
+
+[node name="DeleteRoomButton" type="Button" parent="UI/RightPanel/ModeButtons" unique_id=716318974]
+layout_mode = 2
+text = "Delete"
+
+[node name="LineEdit" type="LineEdit" parent="UI/RightPanel" unique_id=2018058475]
+layout_mode = 2
+placeholder_text = "Search a room..."
+
+[node name="RoomPalette" type="VFlowContainer" parent="UI/RightPanel" unique_id=1045829007]
+layout_mode = 2
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1441348498]
+
+[node name="GridLayer" type="CanvasLayer" parent="." unique_id=722482391]

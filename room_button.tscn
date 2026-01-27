@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://bcl17jsmns63b"]
+
+[ext_resource type="Texture2D" uid="uid://d1j8jnkip2dok" path="res://tilemap_buttons.png" id="1_11lj7"]
+[ext_resource type="Texture2D" uid="uid://bgvn8wns46vqi" path="res://tilemap_rooms.png" id="2_j65ak"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rnnwm"]
+atlas = ExtResource("2_j65ak")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="LabelSettings" id="LabelSettings_11lj7"]
+font_size = 9
+
+[node name="RoomButton" type="NinePatchRect" unique_id=1965012873]
+texture_filter = 1
+offset_right = 68.0
+offset_bottom = 25.0
+scale = Vector2(2.8799999, 2.8799999)
+texture = ExtResource("1_11lj7")
+region_rect = Rect2(16, 0, 16, 16)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="ClickableArea" type="Button" parent="." unique_id=291182747]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 2.0
+offset_right = 65.0
+offset_bottom = 22.0
+
+[node name="RoomIcon" type="Sprite2D" parent="." unique_id=1985429099]
+position = Vector2(12, 12)
+texture = SubResource("AtlasTexture_rnnwm")
+
+[node name="RoomDisplayName" type="Label" parent="." unique_id=1621652985]
+layout_mode = 0
+offset_left = 21.180557
+offset_top = 0.6944445
+offset_right = 61.180557
+offset_bottom = 23.694445
+text = "Cave"
+label_settings = SubResource("LabelSettings_11lj7")
