@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bgvn8wns46vqi" path="res://tilemap_rooms.png" id="1_80nbo"]
 [ext_resource type="Script" uid="uid://b153jeycopmed" path="res://room_manager.gd" id="2_e2o6t"]
 [ext_resource type="Script" uid="uid://cmlx5rf5uha0" path="res://room_layer_manager.gd" id="2_fc0e3"]
+[ext_resource type="Script" uid="uid://bx7jrvkd7nlec" path="res://camera.gd" id="3_7jktm"]
 [ext_resource type="Script" uid="uid://dm5x8ferocggi" path="res://ui_manager.gd" id="3_feb5d"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e2o6t"]
@@ -126,6 +127,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 3
 
 [node name="Camera" type="Camera2D" parent="." unique_id=1441348498]
+script = ExtResource("3_7jktm")
 
 [node name="GridLayer" type="CanvasLayer" parent="." unique_id=722482391]
 
