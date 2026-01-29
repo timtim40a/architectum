@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://wjs2bvbyguhw"]
 
 [ext_resource type="Texture2D" uid="uid://bgvn8wns46vqi" path="res://tilemap_rooms.png" id="1_80nbo"]
+[ext_resource type="Script" uid="uid://b153jeycopmed" path="res://room_manager.gd" id="2_e2o6t"]
+[ext_resource type="Script" uid="uid://cmlx5rf5uha0" path="res://room_layer_manager.gd" id="2_fc0e3"]
+[ext_resource type="Script" uid="uid://dm5x8ferocggi" path="res://ui_manager.gd" id="3_feb5d"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e2o6t"]
 texture = ExtResource("1_80nbo")
@@ -59,6 +62,7 @@ sources/0 = SubResource("TileSetAtlasSource_e2o6t")
 texture_filter = 1
 scale = Vector2(2, 2)
 tile_set = SubResource("TileSet_feb5d")
+script = ExtResource("2_fc0e3")
 
 [node name="PreviewLayer" type="TileMapLayer" parent="Map" unique_id=1697802876]
 
@@ -71,22 +75,32 @@ offset_bottom = 648.0
 
 [node name="StatResourcePanel" type="VSplitContainer" parent="UI/LeftPanel" unique_id=1904142017]
 layout_mode = 2
+mouse_filter = 0
 
 [node name="StatsLabels" type="VBoxContainer" parent="UI/LeftPanel/StatResourcePanel" unique_id=196558192]
 layout_mode = 2
+mouse_filter = 0
 
 [node name="ResourcesLabels" type="VBoxContainer" parent="UI/LeftPanel/StatResourcePanel" unique_id=1808846987]
 layout_mode = 2
+mouse_filter = 0
 
 [node name="SelectedRoom" type="RichTextLabel" parent="UI/LeftPanel" unique_id=1836818705]
 layout_mode = 2
 
 [node name="RightPanel" type="VBoxContainer" parent="UI" unique_id=1632678465]
-offset_right = 215.0
-offset_bottom = 648.0
+anchors_preset = -1
+anchor_right = 0.2126736
+anchor_bottom = 1.0
+grow_vertical = 2
+size_flags_horizontal = 2
+size_flags_vertical = 3
+mouse_filter = 0
+metadata/_edit_use_anchors_ = true
 
 [node name="ModeButtons" type="HBoxContainer" parent="UI/RightPanel" unique_id=78899973]
 layout_mode = 2
+mouse_filter = 0
 
 [node name="PlaceRoomButton" type="Button" parent="UI/RightPanel/ModeButtons" unique_id=1647837023]
 layout_mode = 2
@@ -100,9 +114,30 @@ text = "Delete"
 layout_mode = 2
 placeholder_text = "Search a room..."
 
-[node name="RoomPalette" type="VFlowContainer" parent="UI/RightPanel" unique_id=1045829007]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/RightPanel" unique_id=1276927493]
 layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 3
+
+[node name="RoomPalette" type="VBoxContainer" parent="UI/RightPanel/ScrollContainer" unique_id=1279548063]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 3
 
 [node name="Camera" type="Camera2D" parent="." unique_id=1441348498]
 
 [node name="GridLayer" type="CanvasLayer" parent="." unique_id=722482391]
+
+[node name="RoomManager" type="Node" parent="." unique_id=936358340]
+script = ExtResource("2_e2o6t")
+
+[node name="ResourceManager" type="Node" parent="." unique_id=598239539]
+
+[node name="UIManager" type="Node" parent="." unique_id=54946408]
+script = ExtResource("3_feb5d")
+
+[node name="CompoundManager" type="Node" parent="." unique_id=1222238614]
+
+[connection signal="room_list_updated" from="RoomManager" to="UIManager" method="_on_room_list_updated"]
+[connection signal="room_placed" from="RoomManager" to="Map/RoomLayer" method="_on_room_placed"]

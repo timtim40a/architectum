@@ -8,36 +8,60 @@ atlas = ExtResource("2_j65ak")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="LabelSettings" id="LabelSettings_11lj7"]
-font_size = 9
 
-[node name="RoomButton" type="NinePatchRect" unique_id=1965012873]
+[sub_resource type="AtlasTexture" id="AtlasTexture_11lj7"]
+atlas = ExtResource("1_11lj7")
+region = Rect2(17, 0, 14, 16)
+
+[node name="RoomButton" type="Button" unique_id=215052858]
 texture_filter = 1
-offset_right = 68.0
-offset_bottom = 25.0
-scale = Vector2(2.8799999, 2.8799999)
-texture = ExtResource("1_11lj7")
-region_rect = Rect2(16, 0, 16, 16)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
+custom_minimum_size = Vector2(100, 50)
+anchors_preset = -1
+anchor_right = 0.14105903
+anchor_bottom = 0.08024691
+size_flags_horizontal = 3
+size_flags_vertical = 6
+metadata/_edit_use_anchors_ = true
 
-[node name="ClickableArea" type="Button" parent="." unique_id=291182747]
-layout_mode = 0
-offset_left = 3.0
-offset_top = 2.0
-offset_right = 65.0
-offset_bottom = 22.0
-
-[node name="RoomIcon" type="Sprite2D" parent="." unique_id=1985429099]
-position = Vector2(12, 12)
+[node name="RoomIcon" type="TextureRect" parent="." unique_id=1166549030]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.08
+anchor_top = 0.23076925
+anchor_right = 0.2572307
+anchor_bottom = 0.78461534
+offset_right = 7.200012
+offset_bottom = 7.2000084
+grow_vertical = 2
+scale = Vector2(0.7999997, 0.7999997)
 texture = SubResource("AtlasTexture_rnnwm")
+stretch_mode = 5
 
 [node name="RoomDisplayName" type="Label" parent="." unique_id=1621652985]
-layout_mode = 0
-offset_left = 21.180557
-offset_top = 0.6944445
-offset_right = 61.180557
-offset_bottom = 23.694445
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.32
+anchor_top = 0.125
+anchor_right = 0.95384616
+anchor_bottom = 0.84375
+grow_horizontal = 2
+grow_vertical = 2
 text = "Cave"
 label_settings = SubResource("LabelSettings_11lj7")
+vertical_alignment = 1
+text_overrun_behavior = 5
+metadata/_edit_use_anchors_ = true
+
+[node name="ClickableArea" type="NinePatchRect" parent="." unique_id=728965643]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_11lj7")
+patch_margin_left = 6
+patch_margin_top = 4
+patch_margin_right = 6
+patch_margin_bottom = 9

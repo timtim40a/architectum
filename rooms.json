@@ -323,6 +323,7 @@
 	},
 	"effects": {
 		"Cave": { "Abode": 1 },
+		"Empty Room": { "": 0 },
 		"Cellar": { "": 0 },
 		"Scaffolding": { "": 0 },
 		"Watchtower Top": { "Vantage": 2, "Defence": 2 },
@@ -354,7 +355,7 @@
 		"Dining Room": { "Unity": 2, "Comfort": 1 },
 		"Game Room": { "Unity": 2 }
 	},
-	"adjacencies": {
+	"adjacency": {
 		"Wine Cellar": {
 			"Bar": { "Comfort": 2 }
 		}
