@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://cmlx5rf5uha0" path="res://room_layer_manager.gd" id="2_fc0e3"]
 [ext_resource type="Script" uid="uid://bx7jrvkd7nlec" path="res://camera.gd" id="3_7jktm"]
 [ext_resource type="Script" uid="uid://dm5x8ferocggi" path="res://ui_manager.gd" id="3_feb5d"]
+[ext_resource type="Script" uid="uid://bjh2r7uke0mc3" path="res://grid.gd" id="4_ryrav"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e2o6t"]
 texture = ExtResource("1_80nbo")
@@ -68,6 +69,7 @@ script = ExtResource("2_fc0e3")
 [node name="PreviewLayer" type="TileMapLayer" parent="Map" unique_id=1697802876]
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1155177362]
+layer = 2
 
 [node name="LeftPanel" type="FoldableContainer" parent="UI" unique_id=1653895339]
 offset_left = 901.0
@@ -130,6 +132,9 @@ theme_override_constants/separation = 3
 script = ExtResource("3_7jktm")
 
 [node name="GridLayer" type="CanvasLayer" parent="." unique_id=722482391]
+
+[node name="Grid" type="Node2D" parent="GridLayer" unique_id=757558641]
+script = ExtResource("4_ryrav")
 
 [node name="RoomManager" type="Node" parent="." unique_id=936358340]
 script = ExtResource("2_e2o6t")
